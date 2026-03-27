@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        (request.auth.token.email == "johandanielariasramirez12@gmail.com" && request.auth.token.email_verified == true);
+    }
+
+    function isValidApplication(data) {
+      return data.keys().hasAll(['name', 'phone', 'address', 'dob', 'income', 'country', 'approvedAmount', 'status', 'confirmationNumber', 'createdAt']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.phone is string && data.phone.size() > 0 && data.phone.size() < 20 &&
+             data.address is string && data.address.size() > 0 && data.address.size() < 200 &&
+             data.dob is string && data.dob.size() > 0 &&
+             data.income is number && data.income >= 0 &&
+             data.country is string && data.country.size() > 0 &&
+             data.approvedAmount is number &&
+             data.status in ['pending', 'contacted'] &&
+             data.confirmationNumber is string && data.confirmationNumber.size() == 6 &&
+             data.createdAt is timestamp;
+    }
+
+    match /applications/{applicationId} {
+      // Anyone can create an application
+      allow create: if isValidApplication(request.resource.data);
+      
+      // Only admin can read, update, or delete
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}

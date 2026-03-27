@@ -1,0 +1,28 @@
+{
+  "entities": {
+    "Application": {
+      "title": "Application",
+      "description": "A credit pre-approval application",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Full name of the applicant" },
+        "phone": { "type": "string", "description": "Phone number" },
+        "address": { "type": "string", "description": "Home address" },
+        "dob": { "type": "string", "description": "Date of birth" },
+        "income": { "type": "number", "description": "Monthly income" },
+        "country": { "type": "string", "description": "Country of residence" },
+        "approvedAmount": { "type": "number", "description": "Calculated approved amount" },
+        "status": { "type": "string", "enum": ["pending", "contacted"], "description": "Current status of the application" },
+        "confirmationNumber": { "type": "string", "description": "6-digit confirmation number" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the application was submitted" }
+      },
+      "required": ["name", "phone", "address", "dob", "income", "approvedAmount", "status", "confirmationNumber", "createdAt"]
+    }
+  },
+  "firestore": {
+    "applications/{applicationId}": {
+      "schema": "Application",
+      "description": "Collection of credit applications"
+    }
+  }
+}
